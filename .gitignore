@@ -1,0 +1,19 @@
+# Ignorar datasets
+data/
+!data/processed/malware_bytes.txt
+!data/processed/benign_bytes.txt
+
+# Ignorar datasets crudos
+data/ember2024/
+
+# Ignorar salidas y logs
+*.log
+*.png
+*.txt
+!best_signature.txt
+!Cargo.lock
+
+# Ignorar compilados
+target/
+.venv/
+.idea/

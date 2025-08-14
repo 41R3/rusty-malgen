@@ -1,0 +1,9 @@
+Fitness: 0.3554
+Cobertura: 16056 de 22315 (71.95%)
+Falsos positivos: 4461 de 16000 (27.88%)
+Precisión: 78.26%
+Recall: 71.95%
+Comodines: 2 de 16 bytes (12.50%)
+
+Bytes:
+01 ?? 00 00 00 00 00 ?? 00 00 00 00 00 00 00 00

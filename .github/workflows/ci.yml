@@ -1,0 +1,60 @@
+name: Malware Evolution CI
+
+on: [push]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Python dependencies
+        run: pip install pandas numpy tqdm
+
+      - name: Download Ember dataset sample
+        run: |
+          mkdir -p data/ember2024
+          wget -O data/ember2024/sample.jsonl https://github.com/futurecomputing4ai/ember2024/raw/main/sample.jsonl
+
+      - name: Preprocess data
+        run: |
+          mkdir -p data/processed
+          python scripts/preprocess_ember.py
+
+      - name: Create output directory
+        run: mkdir -p output
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Run with small dataset
+        run: |
+          head -n 100 data/processed/malware_bytes.txt > data/processed/malware_small.txt
+          head -n 100 data/processed/benign_bytes.txt > data/processed/benign_small.txt
+          # Usar variables de entorno para configurar rutas
+          export MALWARE_PATH=data/processed/malware_small.txt
+          export BENIGN_PATH=data/processed/benign_small.txt
+          
+          ./target/release/malware_evolution
+          
+      - name: Upload results
+        uses: actions/upload-artifact@v3
+        with:
+          name: results
+          path: |
+            output/fitness_history.png
+            output/best_signature.txt
